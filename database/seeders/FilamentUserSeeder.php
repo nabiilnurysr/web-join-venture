@@ -16,7 +16,7 @@ class FilamentUserSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@nstore.com',
             'password' => Hash::make('password'),
         ]);
     }
