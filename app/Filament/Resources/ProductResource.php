@@ -21,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Http\Request;
 
 class ProductResource extends Resource
 {
@@ -56,13 +57,15 @@ class ProductResource extends Resource
                             ->required()
                             ->numeric()
                             ->prefix('IDR')
-                            ->live()->afterStateUpdated(function (callable $get, callable $set) {
-                                $price = $get('price');
-                                $capacity = $get('capacity');
+                            ->live()
+                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                $price = floatval($get('price') ?? 0);
+                                $capacity = intval($get('capacity') ?? 0);
+
                                 if ($capacity > 0) {
                                     $set('price_per_person', $price / $capacity);
                                 } else {
-                                    $set('price_per_person', null);
+                                    $set('price_per_person', 0);
                                 }
                             }),
 
@@ -72,12 +75,13 @@ class ProductResource extends Resource
                             ->prefix('People')
                             ->live()
                             ->afterStateUpdated(function (callable $get, callable $set) {
-                                $price = $get('price');
-                                $capacity = $get('capacity');
+                                $price = floatval($get('price') ?? 0);
+                                $capacity = intval($get('capacity') ?? 0);
+
                                 if ($capacity > 0) {
                                     $set('price_per_person', $price / $capacity);
                                 } else {
-                                    $set('price_per_person', null);
+                                    $set('price_per_person', 0);
                                 }
                             }),
 
@@ -86,19 +90,21 @@ class ProductResource extends Resource
                             ->numeric()
                             ->prefix('IDR')
                             ->afterStateHydrated(function (callable $get, callable $set) {
-                                $price = $get('price');
-                                $capacity = $get('capacity');
+                                $price = floatval($get('price') ?? 0);
+                                $capacity = intval($get('capacity') ?? 0);
+
                                 if ($capacity > 0) {
                                     $set('price_per_person', $price / $capacity);
                                 } else {
-                                    $set('price_per_person', null);
+                                    $set('price_per_person', 0);
                                 }
                             }),
 
                         TextInput::make('duration')
                             ->required()
                             ->numeric()
-                            ->prefix('Month')
+                            ->prefix('Month'),
+
                     ]),
 
                 Fieldset::make('Additional')
